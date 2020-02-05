@@ -1,23 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        <DropdownButton
+          id="dropdown-item-button"
+          title="Select IoT device to receive results"
         >
-          Learn React
-        </a>
+          <Dropdown.Item as="button">Siconia</Dropdown.Item>
+          <Dropdown.Item as="button">Netvox</Dropdown.Item>
+          <Dropdown.Item as="button">Tektelic</Dropdown.Item>
+        </DropdownButton>
       </header>
     </div>
   );
