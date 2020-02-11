@@ -1,4 +1,4 @@
-const { handler } = require("./deviceNames");
+const { handler } = require("./lambda-src/deviceNames");
 
 console.log("Starting...");
 handler({}).then(
