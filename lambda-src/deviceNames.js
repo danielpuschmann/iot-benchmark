@@ -37,7 +37,6 @@ function authorize() {
   const client_secret = env.CLIENT_SECRET;
   const client_id = env.CLIENT_ID;
   const redirect_uris = env.REDIRECT_URIS;
-  console.log(client_secret, client_id, redirect_uris);
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
     client_secret,
@@ -46,7 +45,7 @@ function authorize() {
   // Check if we have previously stored a token.
   //fs.readFile(TOKEN_PATH, (err, token) => {
   if (env.ACCESS_TOKEN) {
-    console.log("Setting Credentials", env.ACCESS_TOKEN);
+    console.log("Authenticating Client");
     oAuth2Client.setCredentials({
       refresh_token: env.REFRESH_TOKEN,
       access_token: env.ACCESS_TOKEN
@@ -109,12 +108,18 @@ async function getDeviceNames() {
 }
 
 exports.handler = async event => {
-  return getDeviceNames().then(res => {
-    const response = {
-      statusCode: 200,
-      body: res
-    };
-    //console.log(response);
-    return response;
-  });
+  return getDeviceNames().then(
+    res => {
+      const response = {
+        statusCode: 200,
+        body: JSON.stringify(res)
+      };
+      //console.log(response);
+      return response;
+    },
+    error => {
+      console.log(error);
+      return error;
+    }
+  );
 };
