@@ -92,22 +92,105 @@ function getNewToken(oAuth2Client) {
   });
 }
 
-async function getExperiments() {
-  auth = authorize();
-  const sheets = google.sheets({ version: "v4", auth });
-  return sheets.spreadsheets.values.get({
-    spreadsheetId: env.SPREADSHEET_ID,
-    range: "Sheet1!A1:AN"
+async function getExperiment(name) {
+  return getExperiments().then(experiments => {
+    return experiments[name];
   });
 }
 
+async function getExperiments() {
+  auth = authorize();
+  const sheets = google.sheets({ version: "v4", auth });
+  const values = (
+    await sheets.spreadsheets.values.get({
+      spreadsheetId: env.SPREADSHEET_ID,
+      range: "Sheet1!A1:AN"
+    })
+  ).data.values;
+  const attributes = values[0];
+  const experiments_results = values
+    .slice(1, -1)
+    .filter(row => row[0] != "" && row[0] != "undefined");
+  const experiments = {};
+  //console.log("ATTR", attributes);
+  //console.log("Results", experiments_results);
+  experiments_results.forEach(row => {
+    experiments[row[0]] = {};
+    row.forEach((element, i) => {
+      experiments[row[0]][attributes[i]] = element;
+    });
+  });
+
+  return experiments;
+}
+
 exports.handler = async event => {
-  return getExperiments().then(res => {
+  if (event.httpMethod === "OPTIONS") {
     const response = {
       statusCode: 200,
-      body: res.data.values
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept"
+      },
+      body: JSON.stringify({ message: "You can use CORS" })
+    };
+    return response;
+  } else if (event.httpMethod === "GET") {
+    if (event.queryStringParameters["name"]) {
+      return getExperiment(event.queryStringParameters["name"]).then(
+        res => {
+          const response = {
+            statusCode: 200,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept"
+            },
+            body: JSON.stringify(res)
+          };
+          //console.log(response);
+          return response;
+        },
+        error => {
+          console.log(error);
+          return error;
+        }
+      );
+    } else {
+      return getExperiments().then(
+        res => {
+          const response = {
+            statusCode: 200,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept"
+            },
+            body: JSON.stringify(res)
+          };
+          //console.log(response);
+          return response;
+        },
+        error => {
+          console.log(error);
+          return error;
+        }
+      );
+    }
+  } else {
+    const repsonse = {
+      statusCode: 405,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept"
+      },
+      body: JSON.stringify({
+        message: `Method ${event.httpMethod} not allowed`
+      })
     };
     //console.log(response);
     return response;
-  });
+  }
 };

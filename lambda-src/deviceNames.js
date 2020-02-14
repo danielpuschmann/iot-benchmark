@@ -103,23 +103,43 @@ async function getDeviceNames() {
   ).data.values;
   const names = values
     .map(row => row[0])
-    .filter(name => name != "Name" && name != "" && name && "undefine");
+    .filter(
+      name => name && name != "Name" && name != "" && name != "undefined"
+    );
   return names;
 }
 
 exports.handler = async event => {
-  return getDeviceNames().then(
-    res => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(res)
-      };
-      //console.log(response);
-      return response;
-    },
-    error => {
-      console.log(error);
-      return error;
-    }
-  );
+  if (event.httpMethod === "OPTIONS") {
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept"
+      },
+      body: JSON.stringify({ message: "You can use CORS" })
+    };
+    return response;
+  } else {
+    return getDeviceNames().then(
+      res => {
+        const response = {
+          statusCode: 200,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers":
+              "Origin, X-Requested-With, Content-Type, Accept"
+          },
+          body: JSON.stringify(res)
+        };
+        //console.log(response);
+        return response;
+      },
+      error => {
+        console.log(error);
+        return error;
+      }
+    );
+  }
 };
