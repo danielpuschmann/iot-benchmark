@@ -124,6 +124,36 @@ async function getExperiments() {
   return experiments;
 }
 
+async function filterExperiments(criteria) {
+  return getExperiments().then(experiments => {
+    //console.log("filterExperiments", criteria, experiments);
+    const filtered = Object.values(experiments).filter(experiment =>
+      allCriteria(experiment, criteria)
+    );
+    console.log("Filtered", filtered);
+    return filtered;
+  });
+}
+
+function allCriteria(experiment, criteria) {
+  console.log(experiment, criteria);
+  return criteria.every(criterium =>
+    matchesCriterium(experiment, criterium[0], criterium[1])
+  );
+}
+
+function matchesCriterium(experiment, name, criterium) {
+  console.log(
+    "Matches",
+    experiment,
+    name,
+    criterium,
+    experiment[name],
+    experiment[name] == criterium
+  );
+  return experiment[name] == criterium;
+}
+
 exports.handler = async event => {
   if (event.httpMethod === "OPTIONS") {
     const response = {
@@ -137,8 +167,10 @@ exports.handler = async event => {
     };
     return response;
   } else if (event.httpMethod === "GET") {
-    if (event.queryStringParameters["name"]) {
-      return getExperiment(event.queryStringParameters["name"]).then(
+    const criteria = Object.entries(event.queryStringParameters);
+    console.log("Criteria length", criteria.length);
+    if (criteria.length > 0) {
+      return filterExperiments(criteria).then(
         res => {
           const response = {
             statusCode: 200,

@@ -6,13 +6,19 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "browser": "^0.2.6",
+    "bufferutil": "4.0.1",
+    "chrome-aws-lambda": "^2.1.1",
     "envalid": "^6.0.1",
     "googleapis": "^47.0.0",
+    "netlify-lambda": "^1.6.0",
+    "pdfkit": "^0.11.0",
+    "puppeteer-core": "^2.1.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1",
-    "netlify-lambda": "^1.6.0"
+    "utf-8-validate": "5.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -38,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "puppeteer": "^2.1.1"
   }
 }
